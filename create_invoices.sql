@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS desafio_stone;
+CREATE DATABASE IF NOT EXISTS database;
 
 CREATE TABLE IF NOT EXISTS `database`.`invoices` (
   `document` VARCHAR(14) NOT NULL,
