@@ -14,6 +14,8 @@ func GetAllInvoices(params map[string][]string) Invoices {
 	orderBy := strings.Join(params["orderBy"], "")
 	year := strings.Join(params["year"], "")
 	month := strings.Join(params["month"], "")
+	limit := strings.Join(params["limit"], "")
+	offset := strings.Join(params["offset"], "")
 
 	var invoice Invoice
 	var invoices Invoices
@@ -22,21 +24,22 @@ func GetAllInvoices(params map[string][]string) Invoices {
 
 	if year != "" {
 		sql += "  where reference_year = " + year
-
 		if month != "" {
 			sql += "  and reference_month = " + month
 		}
-
 	} else {
-
 		if month != "" {
 			sql += " where reference_month = " + month
 		}
-
 	}
-
 	if orderBy != "" {
 		sql += " order by " + orderBy
+	}
+	if limit != "" {
+		sql += " limit " + limit
+	}
+	if offset != ""{
+		sql = " offset "+ offset
 	}
 
 	fmt.Println(sql)
