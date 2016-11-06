@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS database;
 
 CREATE TABLE IF NOT EXISTS `database`.`invoices` (
   `document` VARCHAR(14) NOT NULL,
-  `description` VARCHAR(256),
+  `description` VARCHAR(256) NOT NULL,
   `amount` DECIMAL(16,2) NOT NULL,
   `reference_month` INT NOT NULL,
   `reference_year` INT NOT NULL,

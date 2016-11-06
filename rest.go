@@ -6,12 +6,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+  "fmt"
 )
 
 func RestInvoices(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+  params := r.URL.Query()
+  fmt.Println(params)
 
-	invoices := GetAllInvoices()
+	invoices := GetAllInvoices(params)
 	res, err := json.Marshal(invoices)
 	checkErr(err)
 
@@ -104,7 +107,7 @@ func RestDeleteInvoice(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-    
+
 	}
 	w.Write(res)
 }

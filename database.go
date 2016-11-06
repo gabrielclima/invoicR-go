@@ -10,8 +10,7 @@ var db *sql.DB
 
 func initDb() {
 	var err error
-	db, err = sql.Open("mysql", "user:pass@/database?parseTime=true")
+	db, err = sql.Open("mysql", "root:1234@/desafio_stone?parseTime=true")
   err = db.Ping()
-	checkErr(err)
 	checkErr(err)
 }

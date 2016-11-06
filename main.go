@@ -16,7 +16,7 @@ func main() {
 	router.HandleFunc("/invoices", RestInvoices).Methods("GET")
 	router.HandleFunc("/invoices", RestCreateInvoice).Methods("POST")
 	router.HandleFunc("/invoices/{document}", RestInvoiceByDoc).Methods("GET")
-	// router.HandleFunc("/invoices/{document}", RestDeleteInvoice).Methods("DELETE")
+	router.HandleFunc("/invoices/{document}", RestDeleteInvoice).Methods("DELETE")
 
 	// colocando a API online
 	log.Fatal(http.ListenAndServe(":8080", router))
