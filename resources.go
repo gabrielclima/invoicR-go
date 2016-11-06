@@ -16,15 +16,10 @@ func RestInvoices(w http.ResponseWriter, r *http.Request) {
 
 	authenticate := Authenticate(w, r)
 	if authenticate == http.StatusUnauthorized {
-		w.WriteHeader(http.StatusUnauthorized)
-		res, err = json.Marshal(jsonErr{Code: http.StatusUnauthorized, Text: "Unauthorized"})
-		checkErr(err)
-
-		w.Write(res)
 		return
 	}
 
-  params := r.URL.Query()
+	params := r.URL.Query()
 	invoices, err := GetAllInvoices(params)
 	checkErr(err)
 	res, err = json.Marshal(invoices)
@@ -47,11 +42,6 @@ func RestInvoiceByDoc(w http.ResponseWriter, r *http.Request) {
 
 	authenticate := Authenticate(w, r)
 	if authenticate == http.StatusUnauthorized {
-		w.WriteHeader(http.StatusUnauthorized)
-		res, err = json.Marshal(jsonErr{Code: http.StatusUnauthorized, Text: "Unauthorized"})
-		checkErr(err)
-
-		w.Write(res)
 		return
 	}
 
@@ -81,11 +71,6 @@ func RestCreateInvoice(w http.ResponseWriter, r *http.Request) {
 
 	authenticate := Authenticate(w, r)
 	if authenticate == http.StatusUnauthorized {
-		w.WriteHeader(http.StatusUnauthorized)
-		res, err = json.Marshal(jsonErr{Code: http.StatusUnauthorized, Text: "Unauthorized"})
-		checkErr(err)
-
-		w.Write(res)
 		return
 	}
 
@@ -125,11 +110,6 @@ func RestDeleteInvoice(w http.ResponseWriter, r *http.Request) {
 
 	authenticate := Authenticate(w, r)
 	if authenticate == http.StatusUnauthorized {
-		w.WriteHeader(http.StatusUnauthorized)
-		res, err = json.Marshal(jsonErr{Code: http.StatusUnauthorized, Text: "Unauthorized"})
-		checkErr(err)
-
-		w.Write(res)
 		return
 	}
 
