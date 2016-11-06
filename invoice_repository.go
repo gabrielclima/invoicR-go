@@ -5,7 +5,6 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"strings"
-	// "log"
 )
 
 func GetAllInvoices(params map[string][]string) Invoices {
@@ -37,12 +36,10 @@ func GetAllInvoices(params map[string][]string) Invoices {
 	}
 	if limit != "" {
 		sql += " limit " + limit
-		if offset != ""{
-			sql += " offset "+ offset
+		if offset != "" {
+			sql += " offset " + offset
 		}
 	}
-
-	fmt.Println(sql)
 
 	rows, err := db.Query(sql)
 	checkErr(err)
@@ -64,7 +61,7 @@ func GetInvoiceByDoc(document int) Invoice {
 	var invoice Invoice
 	stmt, err := db.Prepare("select * from invoices where document=?")
 	checkErr(err)
-	// row := db.QueryRow("select * from invoices where document=?;", document)
+
 	err = stmt.QueryRow(document).Scan(&invoice.Document, &invoice.Description, &invoice.Amount,
 		&invoice.ReferenceMounth, &invoice.ReferenceYear,
 		&invoice.CreatedAt, &invoice.IsActice, &invoice.DesactiveAt)
@@ -102,5 +99,3 @@ func DeleteInvoice(document int) string {
 
 	return "deleted"
 }
-
-// func GetInvoiceByDocument(int document) Invoice {}

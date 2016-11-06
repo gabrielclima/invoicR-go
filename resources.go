@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-  // "fmt"
 )
 
 func RestInvoices(w http.ResponseWriter, r *http.Request) {
