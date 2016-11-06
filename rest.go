@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	// "fmt"
-	// "log"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 func RestInvoices(w http.ResponseWriter, r *http.Request) {
@@ -28,6 +28,29 @@ type test_struct struct {
 	Test string
 }
 
+func RestInvoiceByDoc(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	vars := mux.Vars(r)
+	var res []byte
+
+	var document int
+
+	document, err := strconv.Atoi(vars["document"])
+	checkErr(err)
+
+	invoice := GetInvoiceByDoc(document)
+
+	if invoice != (Invoice{}) {
+		res, err = json.Marshal(invoice)
+		checkErr(err)
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		res, err = json.Marshal(jsonErr{Code: http.StatusNotFound, Text: "Not Found"})
+	}
+
+	w.Write(res)
+}
+
 func RestCreateInvoice(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
@@ -48,15 +71,40 @@ func RestCreateInvoice(w http.ResponseWriter, r *http.Request) {
 		res, err = json.Marshal(jsonErr{Code: http.StatusConflict,
 			Text: "Já existe um documento com esse número"})
 		checkErr(err)
-    w.Write(res)
+	} else {
+		inv := CreateInvoice(invoice)
+		res, err = json.Marshal(inv)
+		checkErr(err)
+		w.WriteHeader(http.StatusCreated)
+	}
 
-    return
-  } else {
-    inv := CreateInvoice(invoice)
-    res, err = json.Marshal(inv)
-    checkErr(err)
-    w.WriteHeader(http.StatusCreated)
+	w.Write(res)
+}
 
-    w.Write(res)
-  }
+func RestDeleteInvoice(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	vars := mux.Vars(r)
+	var res []byte
+
+	var document int
+
+	document, err := strconv.Atoi(vars["document"])
+	checkErr(err)
+
+	invoice := GetInvoiceByDoc(document)
+	if invoice == (Invoice{}) {
+		w.WriteHeader(http.StatusNotFound)
+		res, err = json.Marshal(jsonErr{Code: http.StatusNotFound, Text: "Not Found"})
+	} else {
+
+		deleted := DeleteInvoice(document)
+		if deleted == "deleted" {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+    
+	}
+	w.Write(res)
 }
