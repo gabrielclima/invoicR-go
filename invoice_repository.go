@@ -37,9 +37,9 @@ func GetAllInvoices(params map[string][]string) Invoices {
 	}
 	if limit != "" {
 		sql += " limit " + limit
-	}
-	if offset != ""{
-		sql = " offset "+ offset
+		if offset != ""{
+			sql += " offset "+ offset
+		}
 	}
 
 	fmt.Println(sql)
