@@ -25,7 +25,8 @@ func RestInvoices(w http.ResponseWriter, r *http.Request) {
 	}
 
   params := r.URL.Query()
-	invoices := GetAllInvoices(params)
+	invoices, err := GetAllInvoices(params)
+	checkErr(err)
 	res, err = json.Marshal(invoices)
 	checkErr(err)
 
@@ -59,7 +60,8 @@ func RestInvoiceByDoc(w http.ResponseWriter, r *http.Request) {
 	document, err = strconv.Atoi(vars["document"])
 	checkErr(err)
 
-	invoice := GetInvoiceByDoc(document)
+	invoice, err := GetInvoiceByDoc(document)
+	checkErr(err)
 
 	if invoice != (Invoice{}) {
 		res, err = json.Marshal(invoice)
@@ -94,7 +96,7 @@ func RestCreateInvoice(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &invoice)
 	checkErr(err)
 
-	inv := GetInvoiceByDoc(invoice.Document)
+	inv, err := GetInvoiceByDoc(invoice.Document)
 
 	if inv != (Invoice{}) {
 		w.WriteHeader(http.StatusConflict)
@@ -102,8 +104,10 @@ func RestCreateInvoice(w http.ResponseWriter, r *http.Request) {
 			Text: "Já existe um documento com esse número"})
 		checkErr(err)
 	} else {
-		inv := CreateInvoice(invoice)
-		invoiceCreated := GetInvoiceByDoc(inv.Document)
+		inv, err := CreateInvoice(invoice)
+		checkErr(err)
+		invoiceCreated, err := GetInvoiceByDoc(inv.Document)
+		checkErr(err)
 		res, err = json.Marshal(invoiceCreated)
 		checkErr(err)
 		w.WriteHeader(http.StatusCreated)
@@ -134,13 +138,16 @@ func RestDeleteInvoice(w http.ResponseWriter, r *http.Request) {
 	document, err = strconv.Atoi(vars["document"])
 	checkErr(err)
 
-	invoice := GetInvoiceByDoc(document)
+	invoice, err := GetInvoiceByDoc(document)
+	checkErr(err)
+
 	if invoice == (Invoice{}) {
 		w.WriteHeader(http.StatusNotFound)
 		res, err = json.Marshal(jsonErr{Code: http.StatusNotFound, Text: "Not Found"})
 	} else {
 
-		deleted := DeleteInvoice(document)
+		deleted, err := DeleteInvoice(document)
+		checkErr(err)
 		if deleted == "deleted" {
 			w.WriteHeader(http.StatusOK)
 		} else {
