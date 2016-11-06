@@ -7,7 +7,7 @@ import (
 
 type NullTime struct {
     Time  time.Time `json:"time"`
-    Valid bool `json:"-"`// Valid is true if Time is not NULL
+    Valid bool `json:"-"`
 }
 
 // Scan implements the Scanner interface.

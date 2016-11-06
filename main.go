@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "fmt"
 	"log"
 	"net/http"
 
@@ -18,6 +17,5 @@ func main() {
 	router.HandleFunc("/invoices/{document}", RestInvoiceByDoc).Methods("GET")
 	router.HandleFunc("/invoices/{document}", RestDeleteInvoice).Methods("DELETE")
 
-	// colocando a API online
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
