@@ -2,14 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"strings"
 )
 
 func GetAllInvoices(params map[string][]string) (Invoices, error) {
-	fmt.Println(params)
-
 	orderBy := strings.Join(params["orderBy"], "")
 	year := strings.Join(params["year"], "")
 	month := strings.Join(params["month"], "")

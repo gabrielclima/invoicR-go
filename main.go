@@ -3,19 +3,11 @@ package main
 import (
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 func main() {
 	initDb()
 	defer db.Close()
-	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/invoices", RestInvoices).Methods("GET")
-	router.HandleFunc("/invoices", RestCreateInvoice).Methods("POST")
-	router.HandleFunc("/invoices/{document}", RestInvoiceByDoc).Methods("GET")
-	router.HandleFunc("/invoices/{document}", RestDeleteInvoice).Methods("DELETE")
-
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", Handlers()))
 }

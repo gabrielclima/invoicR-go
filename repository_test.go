@@ -11,7 +11,7 @@ func TestCreateInvoice(t *testing.T) {
 	defer db.Close()
 
 	// invoice := new(Invoice)
-	invoice.Document = 1111111132
+	invoice.Document = 21466713311348
 	invoice.Description = "Testando API"
 	invoice.Amount = 213123.22
 	invoice.ReferenceYear = 2015
@@ -19,10 +19,10 @@ func TestCreateInvoice(t *testing.T) {
 
 	i, err := CreateInvoice(invoice)
 	if err != nil {
-		t.Fatal("Erro no teste de criação : ", err)
+		t.Error("Erro no teste de criação : ", err)
 	}
 	if i != invoice {
-		t.Fatal("O invoice não foi criado")
+		t.Error("O invoice não foi criado")
 	}
 }
 
@@ -32,7 +32,7 @@ func TestGetInvoiceByDoc(t *testing.T) {
 
 	invoice, err := GetInvoiceByDoc(invoice.Document)
 	if invoice == (Invoice{}) {
-		t.Fatal("Erro ao tentar encontrar um invoice pelo id \n Erro : ", err)
+		t.Error("Erro ao tentar encontrar um invoice pelo id \n Erro : ", err)
 	}
 }
 
@@ -42,7 +42,7 @@ func TestGetAllInvoices(t *testing.T){
 
 	invoices, err := GetAllInvoices(nil)
 	if invoices == nil {
-		t.Fatal("Erro no teste de recuperar todos os invoices", err)
+		t.Error("Erro no teste de recuperar todos os invoices", err)
 	}
 }
 
@@ -52,13 +52,13 @@ func TestDeleteInvoice(t *testing.T){
 
 	deleted, err := DeleteInvoice(invoice.Document)
 	if err != nil {
-		t.Fatal("Erro no teste de deleção ", err)
+		t.Error("Erro no teste de deleção ", err)
 	}
 	if deleted != "deleted" {
-		t.Fatal("Erro na deleção")
+		t.Error("Erro na deleção")
 	}
 	i, err := GetInvoiceByDoc(invoice.Document)
 	if i.IsActice == 1 {
-		t.Fatal("Erro na deleção", err)
+		t.Error("Erro na deleção", err)
 	}
 }
