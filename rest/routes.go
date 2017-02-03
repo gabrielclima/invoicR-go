@@ -11,7 +11,7 @@ func Handlers() *mux.Router {
   router.HandleFunc("/invoices", InvoicesResource).Methods("GET")
 	router.HandleFunc("/invoices", CreateInvoiceResource).Methods("POST")
 	router.HandleFunc("/invoices/{document}", InvoiceByDocResource).Methods("GET")
-	router.HandleFunc("/invoices/{document}", RestDeleteInvoiceResource).Methods("DELETE")
+	router.HandleFunc("/invoices/{document}", DeleteInvoiceResource).Methods("DELETE")
 
   return router
 }

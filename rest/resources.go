@@ -9,6 +9,7 @@ import (
 	auth "github.com/gabrielclima/go_rest_api/auth"
 	utils "github.com/gabrielclima/go_rest_api/utils"
 	. "github.com/gabrielclima/go_rest_api/domain"
+	"github.com/gabrielclima/go_rest_api/repositories"
 )
 
 // ApplicationJSON const for used in all Headers setting a Content-Type
@@ -27,16 +28,16 @@ func InvoicesResource(w http.ResponseWriter, r *http.Request) {
 	}
 
 	params := r.URL.Query()
-	invoices, err := GetAllInvoices(params)
+	invoices, err := repositories.GetAllInvoices(params)
 	utils.CheckErr(err)
 	res, err = json.Marshal(invoices)
 	utils.CheckErr(err)
 
-	if invoices == nil {
-		w.WriteHeader(http.StatusNotFound)
-		res, err = json.Marshal(jsonErr{Code: http.StatusNotFound, Text: "Not Found"})
-		utils.CheckErr(err)
-	}
+	//if invoices == nil {
+	//	w.WriteHeader(http.StatusOK)
+	//	res, err = json.Marshal(utils.JsonErr{Code: http.StatusOK, Text: "Not Found"})
+	//	utils.CheckErr(err)
+	//}
 
 	w.Write(res)
 }
@@ -48,7 +49,7 @@ func InvoiceByDocResource(w http.ResponseWriter, r *http.Request) {
 	var res []byte
 	var err error
 
-	authenticate := Authenticate(w, r)
+	authenticate := auth.Authenticate(w, r)
 	if authenticate == http.StatusUnauthorized {
 		return
 	}
@@ -58,7 +59,7 @@ func InvoiceByDocResource(w http.ResponseWriter, r *http.Request) {
 	document, err = strconv.Atoi(vars["document"])
 	utils.CheckErr(err)
 
-	invoice, err := GetInvoiceByDoc(document)
+	invoice, err := repositories.GetInvoiceByDoc(document)
 	utils.CheckErr(err)
 
 	if invoice != (Invoice{}) {
@@ -66,7 +67,7 @@ func InvoiceByDocResource(w http.ResponseWriter, r *http.Request) {
 		utils.CheckErr(err)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
-		res, err = json.Marshal(jsonErr{Code: http.StatusNotFound, Text: "Not Found"})
+		res, err = json.Marshal(utils.JsonErr{Code: http.StatusNotFound, Text: "Not Found"})
 	}
 
 	w.Write(res)
@@ -78,7 +79,7 @@ func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var res []byte
 
-	authenticate := Authenticate(w, r)
+	authenticate := auth.Authenticate(w, r)
 	if authenticate == http.StatusUnauthorized {
 		return
 	}
@@ -90,17 +91,17 @@ func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &invoice)
 	utils.CheckErr(err)
 
-	inv, err := GetInvoiceByDoc(invoice.Document)
+	inv, err := repositories.GetInvoiceByDoc(invoice.Document)
 
 	if inv != (Invoice{}) {
 		w.WriteHeader(http.StatusConflict)
-		res, err = json.Marshal(jsonErr{Code: http.StatusConflict,
+		res, err = json.Marshal(utils.JsonErr{Code: http.StatusConflict,
 			Text: "Já existe um documento com esse número"})
 		utils.CheckErr(err)
 	} else {
-		inv, err := CreateInvoice(invoice)
+		inv, err := repositories.CreateInvoice(invoice)
 		utils.CheckErr(err)
-		invoiceCreated, err := GetInvoiceByDoc(inv.Document)
+		invoiceCreated, err := repositories.GetInvoiceByDoc(inv.Document)
 		utils.CheckErr(err)
 		res, err = json.Marshal(invoiceCreated)
 		utils.CheckErr(err)
@@ -118,7 +119,7 @@ func DeleteInvoiceResource(w http.ResponseWriter, r *http.Request) {
 	var res []byte
 	var err error
 
-	authenticate := Authenticate(w, r)
+	authenticate := auth.Authenticate(w, r)
 	if authenticate == http.StatusUnauthorized {
 		return
 	}
@@ -128,15 +129,15 @@ func DeleteInvoiceResource(w http.ResponseWriter, r *http.Request) {
 	document, err = strconv.Atoi(vars["document"])
 	utils.CheckErr(err)
 
-	invoice, err := GetInvoiceByDoc(document)
+	invoice, err := repositories.GetInvoiceByDoc(document)
 	utils.CheckErr(err)
 
 	if invoice == (Invoice{}) {
 		w.WriteHeader(http.StatusNotFound)
-		res, err = json.Marshal(jsonErr{Code: http.StatusNotFound, Text: "Not Found"})
+		res, err = json.Marshal(utils.JsonErr{Code: http.StatusNotFound, Text: "Not Found"})
 	} else {
 
-		deleted, err := DeleteInvoice(document)
+		deleted, err := repositories.DeleteInvoice(document)
 		utils.CheckErr(err)
 		if deleted == "deleted" {
 			w.WriteHeader(http.StatusOK)

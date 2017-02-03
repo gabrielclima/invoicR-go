@@ -3,17 +3,20 @@ package repositories
 import (
 	"database/sql"
 	"strings"
+	"github.com/gabrielclima/go_rest_api/domain"
+	"github.com/gabrielclima/go_rest_api/utils"
+	db "github.com/gabrielclima/go_rest_api/database"
 )
 
-func GetAllInvoices(params map[string][]string) (Invoices, error) {
+func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 	orderBy := strings.Join(params["orderBy"], "")
 	year := strings.Join(params["year"], "")
 	month := strings.Join(params["month"], "")
 	limit := strings.Join(params["limit"], "")
 	offset := strings.Join(params["offset"], "")
 
-	var invoice Invoice
-	var invoices Invoices
+	var invoice domain.Invoice
+	var invoices domain.Invoices
 
 	var sql = "select * from invoices"
 
@@ -37,15 +40,15 @@ func GetAllInvoices(params map[string][]string) (Invoices, error) {
 		}
 	}
 
-	rows, err := db.Query(sql)
-	checkErr(err)
+	rows, err := db.DBCon.Query(sql)
+	utils.CheckErr(err)
 
 	for rows.Next() {
 		err = rows.Scan(&invoice.Document, &invoice.Description, &invoice.Amount,
 			&invoice.ReferenceMounth, &invoice.ReferenceYear,
 			&invoice.CreatedAt, &invoice.IsActice, &invoice.DesactiveAt)
 		invoices = append(invoices, invoice)
-		checkErr(err)
+		utils.CheckErr(err)
 	}
 
 	defer rows.Close()
@@ -53,10 +56,10 @@ func GetAllInvoices(params map[string][]string) (Invoices, error) {
 	return invoices, err
 }
 
-func GetInvoiceByDoc(document int) (Invoice, error) {
-	var invoice Invoice
-	stmt, err := db.Prepare("select * from invoices where document=?")
-	checkErr(err)
+func GetInvoiceByDoc(document int) (domain.Invoice, error) {
+	var invoice domain.Invoice
+	stmt, err := db.DBCon.Prepare("select * from invoices where document=?")
+	utils.CheckErr(err)
 
 	err = stmt.QueryRow(document).Scan(&invoice.Document, &invoice.Description, &invoice.Amount,
 		&invoice.ReferenceMounth, &invoice.ReferenceYear,
@@ -64,17 +67,17 @@ func GetInvoiceByDoc(document int) (Invoice, error) {
 	if err == sql.ErrNoRows {
 		return invoice, err
 	}
-	checkErr(err)
+	utils.CheckErr(err)
 	defer stmt.Close()
 
 	return invoice, err
 }
 
-func CreateInvoice(invoice *Invoice) (*Invoice, error) {
+func CreateInvoice(invoice *domain.Invoice) (*domain.Invoice, error) {
 	var sql = "insert into invoices set document=?, description=?, amount=?,"
 	sql += " reference_month=?, reference_year=?, created_at=NOW(), is_active=1"
-	stmt, err := db.Prepare(sql)
-	checkErr(err)
+	stmt, err := db.DBCon.Prepare(sql)
+	utils.CheckErr(err)
 
 	_, err = stmt.Exec(invoice.Document, invoice.Description, invoice.Amount,
 		invoice.ReferenceMounth, invoice.ReferenceYear)
@@ -88,11 +91,11 @@ func CreateInvoice(invoice *Invoice) (*Invoice, error) {
 }
 
 func DeleteInvoice(document int) (string, error) {
-	stmt, err := db.Prepare("update invoices set is_active=0, desactive_at=NOW() where document = ?")
-	checkErr(err)
+	stmt, err := db.DBCon.Prepare("update invoices set is_active=0, desactive_at=NOW() where document = ?")
+	utils.CheckErr(err)
 
 	_, err = stmt.Exec(document)
-	checkErr(err)
+	utils.CheckErr(err)
 	defer stmt.Close()
 
 	return "deleted", err

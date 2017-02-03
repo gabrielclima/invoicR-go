@@ -1,14 +1,12 @@
 package main
 
 import (
+	_ "github.com/gabrielclima/go_rest_api/database"
+	"github.com/gabrielclima/go_rest_api/rest"
 	"log"
-	http "net/http"
-	"github.com/gabrielclima/go_rest_api/database"
-	rest "github.com/gabrielclima/go_rest_api/rest"
+	"net/http"
 )
 
 func main() {
-	InitDb()
-
-	log.Fatal(http.ListenAndServe(":8080", Handlers()))
+	log.Fatal(http.ListenAndServe(":8080", rest.Handlers()))
 }

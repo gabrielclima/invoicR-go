@@ -2,13 +2,16 @@ package tests
 
 import (
 	"testing"
+	"github.com/gabrielclima/go_rest_api/domain"
+	db "github.com/gabrielclima/go_rest_api/database"
+	"github.com/gabrielclima/go_rest_api/repositories"
 )
 
-var invoice = new(Invoice)
+var invoice = new(domain.Invoice)
 
 func TestCreateInvoice(t *testing.T) {
-	initDb()
-	defer db.Close()
+	db.InitDb()
+	defer db.DBCon.Close()
 
 	// invoice := new(Invoice)
 	invoice.Document = 21466713311348
@@ -17,7 +20,7 @@ func TestCreateInvoice(t *testing.T) {
 	invoice.ReferenceYear = 2015
 	invoice.ReferenceMounth = 2
 
-	i, err := CreateInvoice(invoice)
+	i, err := repositories.CreateInvoice(invoice)
 	if err != nil {
 		t.Error("Erro no teste de criação : ", err)
 	}
@@ -27,37 +30,37 @@ func TestCreateInvoice(t *testing.T) {
 }
 
 func TestGetInvoiceByDoc(t *testing.T) {
-	initDb()
-	defer db.Close()
+	db.InitDb()
+	defer db.DBCon.Close()
 
-	invoice, err := GetInvoiceByDoc(invoice.Document)
-	if invoice == (Invoice{}) {
+	invoice, err := repositories.GetInvoiceByDoc(invoice.Document)
+	if invoice == (domain.Invoice{}) {
 		t.Error("Erro ao tentar encontrar um invoice pelo id \n Erro : ", err)
 	}
 }
 
 func TestGetAllInvoices(t *testing.T){
-	initDb()
-	defer db.Close()
+	db.InitDb()
+	defer db.DBCon.Close()
 
-	invoices, err := GetAllInvoices(nil)
+	invoices, err := repositories.GetAllInvoices(nil)
 	if invoices == nil {
 		t.Error("Erro no teste de recuperar todos os invoices", err)
 	}
 }
 
 func TestDeleteInvoice(t *testing.T){
-	initDb()
-	defer db.Close()
+	db.InitDb()
+	defer db.DBCon.Close()
 
-	deleted, err := DeleteInvoice(invoice.Document)
+	deleted, err := repositories.DeleteInvoice(invoice.Document)
 	if err != nil {
 		t.Error("Erro no teste de deleção ", err)
 	}
 	if deleted != "deleted" {
 		t.Error("Erro na deleção")
 	}
-	i, err := GetInvoiceByDoc(invoice.Document)
+	i, err := repositories.GetInvoiceByDoc(invoice.Document)
 	if i.IsActice == 1 {
 		t.Error("Erro na deleção", err)
 	}
