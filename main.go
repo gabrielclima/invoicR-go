@@ -2,13 +2,13 @@ package main
 
 import (
 	"log"
-	"net/http"
-	"github.com/gabriellima/go_rest_api/database"
+	http "net/http"
+	"github.com/gabrielclima/go_rest_api/database"
+	rest "github.com/gabrielclima/go_rest_api/rest"
 )
 
 func main() {
-	initDb()
-	defer db.Close()
+	InitDb()
 
 	log.Fatal(http.ListenAndServe(":8080", Handlers()))
 }

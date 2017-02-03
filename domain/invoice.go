@@ -2,8 +2,10 @@ package domain
 
 import (
 	"time"
+	"github.com/gabrielclima/go_rest_api/utils"
 )
 
+// Invoice struct
 type Invoice struct {
 	Document        int       `json:"document,string"`
 	Description     string    `json:"description"`
@@ -12,7 +14,8 @@ type Invoice struct {
 	ReferenceYear   int       `json:"reference_year"`
 	CreatedAt       time.Time `json:"created_at"`
 	IsActice        byte      `json:"is_active"`
-	DesactiveAt     NullTime  `json:"desactive_at"`
+	DesactiveAt     utils.NullTime  `json:"desactive_at"`
 }
 
+// Invoices collection struct
 type Invoices []Invoice

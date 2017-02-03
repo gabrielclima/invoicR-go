@@ -2,15 +2,17 @@ package database
 
 import (
 	"database/sql"
-	"github.com/gabrielclima/go_rest_api/utils"
+	utils "github.com/gabrielclima/go_rest_api/utils"
 )
 
 var db *sql.DB
 
-func initDb() {
+// InitDb make the database connection
+func InitDb() {
 	var err error
 	db, err = sql.Open("mysql", "root:1234@/invoices?parseTime=true")
-	checkErr(err)
+	utils.CheckErr(err)
 	err = db.Ping()
-	checkErr(err)
+	utils.CheckErr(err)
+	defer db.Close()
 }

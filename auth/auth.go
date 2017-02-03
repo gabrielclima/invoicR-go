@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
   "strings"
+	utils "github.com/gabrielclima/go_rest_api/utils"
 )
 
 var validTokens = []string{"token#app1", "token#app2"}
 
+// Authenticate requests based in validTokens list
 func Authenticate(w http.ResponseWriter, r *http.Request) int {
 	var status int
 	var res []byte
@@ -20,8 +22,8 @@ func Authenticate(w http.ResponseWriter, r *http.Request) int {
   } else {
     status = http.StatusUnauthorized
 		w.WriteHeader(status)
-		res, err = json.Marshal(jsonErr{Code: http.StatusUnauthorized, Text: "Unauthorized"})
-		checkErr(err)
+		res, err = json.Marshal(utils.JsonErr{Code: http.StatusUnauthorized, Text: "Unauthorized"})
+		utils.CheckErr(err)
 		w.Write(res)
   }
 

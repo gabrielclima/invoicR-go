@@ -4,13 +4,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Handlers - all routes
 func Handlers() *mux.Router {
   router := mux.NewRouter().StrictSlash(true)
 
-  router.HandleFunc("/invoices", RestInvoices).Methods("GET")
-	router.HandleFunc("/invoices", RestCreateInvoice).Methods("POST")
-	router.HandleFunc("/invoices/{document}", RestInvoiceByDoc).Methods("GET")
-	router.HandleFunc("/invoices/{document}", RestDeleteInvoice).Methods("DELETE")
+  router.HandleFunc("/invoices", InvoicesResource).Methods("GET")
+	router.HandleFunc("/invoices", CreateInvoiceResource).Methods("POST")
+	router.HandleFunc("/invoices/{document}", InvoiceByDocResource).Methods("GET")
+	router.HandleFunc("/invoices/{document}", RestDeleteInvoiceResource).Methods("DELETE")
 
   return router
 }

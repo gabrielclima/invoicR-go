@@ -1,11 +1,13 @@
 package utils
 
-type jsonErr struct {
+// JsonErr struct for error JSON response
+type JsonErr struct {
 	Code int    `json:"code"`
 	Text string `json:"text"`
 }
 
-func checkErr(err error) {
+// CheckErr - a common function for error check
+func CheckErr(err error) {
 	if err != nil {
 		panic(err)
 	}

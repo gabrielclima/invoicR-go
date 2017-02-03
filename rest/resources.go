@@ -6,38 +6,44 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	auth "github.com/gabrielclima/go_rest_api/auth"
+	utils "github.com/gabrielclima/go_rest_api/utils"
+	. "github.com/gabrielclima/go_rest_api/domain"
 )
 
-const APPLICATION_JSON := "application/json; charset=UTF-8"
+// ApplicationJSON const for used in all Headers setting a Content-Type
+const ApplicationJSON = "application/json; charset=UTF-8"
 
-func RestInvoices(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", APPLICATION_JSON)
+// InvoicesResource returns all actives invoices
+func InvoicesResource(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", ApplicationJSON)
 
 	var res []byte
 	var err error
 
-	authenticate := Authenticate(w, r)
+	authenticate := auth.Authenticate(w, r)
 	if authenticate == http.StatusUnauthorized {
 		return
 	}
 
 	params := r.URL.Query()
 	invoices, err := GetAllInvoices(params)
-	checkErr(err)
+	utils.CheckErr(err)
 	res, err = json.Marshal(invoices)
-	checkErr(err)
+	utils.CheckErr(err)
 
 	if invoices == nil {
 		w.WriteHeader(http.StatusNotFound)
 		res, err = json.Marshal(jsonErr{Code: http.StatusNotFound, Text: "Not Found"})
-		checkErr(err)
+		utils.CheckErr(err)
 	}
 
 	w.Write(res)
 }
 
-func RestInvoiceByDoc(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", APPLICATION_JSON)
+// InvoiceByDocResource return a the invoices parsed in request path
+func InvoiceByDocResource(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", ApplicationJSON)
 	vars := mux.Vars(r)
 	var res []byte
 	var err error
@@ -50,14 +56,14 @@ func RestInvoiceByDoc(w http.ResponseWriter, r *http.Request) {
 	var document int
 
 	document, err = strconv.Atoi(vars["document"])
-	checkErr(err)
+	utils.CheckErr(err)
 
 	invoice, err := GetInvoiceByDoc(document)
-	checkErr(err)
+	utils.CheckErr(err)
 
 	if invoice != (Invoice{}) {
 		res, err = json.Marshal(invoice)
-		checkErr(err)
+		utils.CheckErr(err)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 		res, err = json.Marshal(jsonErr{Code: http.StatusNotFound, Text: "Not Found"})
@@ -66,8 +72,9 @@ func RestInvoiceByDoc(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func RestCreateInvoice(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", APPLICATION_JSON)
+// CreateInvoiceResource create a invoice based on JSON body parsed in request
+func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", ApplicationJSON)
 	var err error
 	var res []byte
 
@@ -78,10 +85,10 @@ func RestCreateInvoice(w http.ResponseWriter, r *http.Request) {
 
 	invoice := new(Invoice)
 	body, err := ioutil.ReadAll(r.Body)
-	checkErr(err)
+	utils.CheckErr(err)
 
 	err = json.Unmarshal(body, &invoice)
-	checkErr(err)
+	utils.CheckErr(err)
 
 	inv, err := GetInvoiceByDoc(invoice.Document)
 
@@ -89,22 +96,23 @@ func RestCreateInvoice(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusConflict)
 		res, err = json.Marshal(jsonErr{Code: http.StatusConflict,
 			Text: "Já existe um documento com esse número"})
-		checkErr(err)
+		utils.CheckErr(err)
 	} else {
 		inv, err := CreateInvoice(invoice)
-		checkErr(err)
+		utils.CheckErr(err)
 		invoiceCreated, err := GetInvoiceByDoc(inv.Document)
-		checkErr(err)
+		utils.CheckErr(err)
 		res, err = json.Marshal(invoiceCreated)
-		checkErr(err)
+		utils.CheckErr(err)
 		w.WriteHeader(http.StatusCreated)
 	}
 
 	w.Write(res)
 }
 
-func RestDeleteInvoice(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", APPLICATION_JSON)
+// DeleteInvoiceResource do a soft delete on a invoice parsed in request path
+func DeleteInvoiceResource(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", ApplicationJSON)
 
 	vars := mux.Vars(r)
 	var res []byte
@@ -118,10 +126,10 @@ func RestDeleteInvoice(w http.ResponseWriter, r *http.Request) {
 	var document int
 
 	document, err = strconv.Atoi(vars["document"])
-	checkErr(err)
+	utils.CheckErr(err)
 
 	invoice, err := GetInvoiceByDoc(document)
-	checkErr(err)
+	utils.CheckErr(err)
 
 	if invoice == (Invoice{}) {
 		w.WriteHeader(http.StatusNotFound)
@@ -129,7 +137,7 @@ func RestDeleteInvoice(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		deleted, err := DeleteInvoice(document)
-		checkErr(err)
+		utils.CheckErr(err)
 		if deleted == "deleted" {
 			w.WriteHeader(http.StatusOK)
 		} else {
