@@ -1,4 +1,4 @@
-package main
+package auth
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) int {
 	var err error
   header := r.Header
 	token := strings.Join(header["Authorization"], "")
-	
+
   if isValueInList(token, validTokens){
     status = http.StatusOK
   } else {

@@ -1,9 +1,8 @@
-package main
+package database
 
 import (
 	"database/sql"
-
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/gabrielclima/go_rest_api/utils"
 )
 
 var db *sql.DB
@@ -12,6 +11,6 @@ func initDb() {
 	var err error
 	db, err = sql.Open("mysql", "root:1234@/invoices?parseTime=true")
 	checkErr(err)
-  err = db.Ping()
+	err = db.Ping()
 	checkErr(err)
 }

@@ -1,8 +1,7 @@
-package main
+package repositories
 
 import (
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"strings"
 )
 
