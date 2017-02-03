@@ -2,8 +2,8 @@ package database
 
 import (
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gabrielclima/go_rest_api/utils"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var DBCon *sql.DB

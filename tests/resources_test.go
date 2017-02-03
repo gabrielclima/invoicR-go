@@ -1,24 +1,24 @@
 package tests
 
 import (
-    "fmt"
-		"io"
-		"net/http"
-    "net/http/httptest"
-    "strings"
-    "testing"
+	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
 )
 
 var (
-    server   *httptest.Server
-    reader   io.Reader //Ignore this for now
-    usersUrl string
+	server   *httptest.Server
+	reader   io.Reader //Ignore this for now
+	usersUrl string
 )
 
 func init() {
-    server = httptest.NewServer(Handlers())
+	server = httptest.NewServer(Handlers())
 
-    usersUrl = fmt.Sprintf("%s/invoices", server.URL)
+	usersUrl = fmt.Sprintf("%s/invoices", server.URL)
 }
 
 func TestCreateInvoiceEndpoint(t *testing.T) {

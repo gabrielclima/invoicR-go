@@ -2,10 +2,10 @@ package repositories
 
 import (
 	"database/sql"
-	"strings"
+	db "github.com/gabrielclima/go_rest_api/database"
 	"github.com/gabrielclima/go_rest_api/domain"
 	"github.com/gabrielclima/go_rest_api/utils"
-	db "github.com/gabrielclima/go_rest_api/database"
+	"strings"
 )
 
 func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
@@ -61,7 +61,7 @@ func GetInvoiceByDoc(document int) (domain.Invoice, error) {
 	stmt, err := db.DBCon.Prepare("select * from invoices where document=?")
 	utils.CheckErr(err)
 
-	err = stmt.QueryRow(document).Scan(&invoice.Document, &invoice.Description, &invoice.Amount,
+	err = stmt.QueryRow(document).Scan(&invoice.Id, &invoice.Document, &invoice.Description, &invoice.Amount,
 		&invoice.ReferenceMounth, &invoice.ReferenceYear,
 		&invoice.CreatedAt, &invoice.IsActice, &invoice.DesactiveAt)
 	if err == sql.ErrNoRows {

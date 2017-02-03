@@ -2,14 +2,14 @@ package rest
 
 import (
 	"encoding/json"
+	auth "github.com/gabrielclima/go_rest_api/auth"
+	. "github.com/gabrielclima/go_rest_api/domain"
+	"github.com/gabrielclima/go_rest_api/repositories"
+	utils "github.com/gabrielclima/go_rest_api/utils"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	auth "github.com/gabrielclima/go_rest_api/auth"
-	utils "github.com/gabrielclima/go_rest_api/utils"
-	. "github.com/gabrielclima/go_rest_api/domain"
-	"github.com/gabrielclima/go_rest_api/repositories"
 )
 
 // ApplicationJSON const for used in all Headers setting a Content-Type
@@ -19,7 +19,7 @@ const ApplicationJSON = "application/json; charset=UTF-8"
 func InvoicesResource(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 
-	var res []byte
+	res := []byte(`[]`)
 	var err error
 
 	authenticate := auth.Authenticate(w, r)
@@ -30,14 +30,10 @@ func InvoicesResource(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	invoices, err := repositories.GetAllInvoices(params)
 	utils.CheckErr(err)
-	res, err = json.Marshal(invoices)
-	utils.CheckErr(err)
-
-	//if invoices == nil {
-	//	w.WriteHeader(http.StatusOK)
-	//	res, err = json.Marshal(utils.JsonErr{Code: http.StatusOK, Text: "Not Found"})
-	//	utils.CheckErr(err)
-	//}
+	if invoices != nil {
+		res, err = json.Marshal(invoices)
+		utils.CheckErr(err)
+	}
 
 	w.Write(res)
 }

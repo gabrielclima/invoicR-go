@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"testing"
-	"github.com/gabrielclima/go_rest_api/domain"
 	db "github.com/gabrielclima/go_rest_api/database"
+	"github.com/gabrielclima/go_rest_api/domain"
 	"github.com/gabrielclima/go_rest_api/repositories"
+	"testing"
 )
 
 var invoice = new(domain.Invoice)
@@ -39,7 +39,7 @@ func TestGetInvoiceByDoc(t *testing.T) {
 	}
 }
 
-func TestGetAllInvoices(t *testing.T){
+func TestGetAllInvoices(t *testing.T) {
 	db.InitDb()
 	defer db.DBCon.Close()
 
@@ -49,7 +49,7 @@ func TestGetAllInvoices(t *testing.T){
 	}
 }
 
-func TestDeleteInvoice(t *testing.T){
+func TestDeleteInvoice(t *testing.T) {
 	db.InitDb()
 	defer db.DBCon.Close()
 
