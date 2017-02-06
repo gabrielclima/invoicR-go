@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"github.com/gabrielclima/go_rest_api/rest"
+	db "github.com/gabrielclima/go_rest_api/database"
 )
 
 var (
@@ -16,14 +18,13 @@ var (
 )
 
 func init() {
-	server = httptest.NewServer(Handlers())
+	server = httptest.NewServer(rest.Handlers())
 
 	usersUrl = fmt.Sprintf("%s/invoices", server.URL)
 }
 
 func TestCreateInvoiceEndpoint(t *testing.T) {
-	initDb()
-	defer db.Close()
+	defer db.DBCon.Close()
 
 	invoiceJson := `{"document" : "12312311999"}`
 	reader := strings.NewReader(invoiceJson)
@@ -42,8 +43,7 @@ func TestCreateInvoiceEndpoint(t *testing.T) {
 }
 
 func TestGetAllInvoicesEndpoint(t *testing.T) {
-	initDb()
-	defer db.Close()
+	defer db.DBCon.Close()
 
 	reader = strings.NewReader("")
 

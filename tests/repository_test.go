@@ -10,7 +10,6 @@ import (
 var invoice = new(domain.Invoice)
 
 func TestCreateInvoice(t *testing.T) {
-	db.InitDb()
 	defer db.DBCon.Close()
 
 	// invoice := new(Invoice)
@@ -30,7 +29,6 @@ func TestCreateInvoice(t *testing.T) {
 }
 
 func TestGetInvoiceByDoc(t *testing.T) {
-	db.InitDb()
 	defer db.DBCon.Close()
 
 	invoice, err := repositories.GetInvoiceByDoc(invoice.Document)
@@ -40,7 +38,6 @@ func TestGetInvoiceByDoc(t *testing.T) {
 }
 
 func TestGetAllInvoices(t *testing.T) {
-	db.InitDb()
 	defer db.DBCon.Close()
 
 	invoices, err := repositories.GetAllInvoices(nil)
@@ -50,7 +47,6 @@ func TestGetAllInvoices(t *testing.T) {
 }
 
 func TestDeleteInvoice(t *testing.T) {
-	db.InitDb()
 	defer db.DBCon.Close()
 
 	deleted, err := repositories.DeleteInvoice(invoice.Document)
