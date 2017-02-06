@@ -6,7 +6,14 @@ import (
 	"github.com/gabrielclima/go_rest_api/domain"
 	"github.com/gabrielclima/go_rest_api/utils"
 	"strings"
+	"fmt"
 )
+
+var DBCon *sql.DB
+
+func init(){
+	DBCon = db.DBCon
+}
 
 func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 	orderBy := strings.Join(params["orderBy"], "")
@@ -30,6 +37,13 @@ func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 			sql += " where reference_month = " + month
 		}
 	}
+
+	if year != "" && month != "" {
+		sql += "where is_active = 1 "
+	} else {
+		sql += "and is_active = 1"
+	}
+
 	if orderBy != "" {
 		sql += " order by " + orderBy
 	}
@@ -40,7 +54,7 @@ func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 		}
 	}
 
-	rows, err := db.DBCon.Query(sql)
+	rows, err := DBCon.Query(sql)
 	utils.CheckErr(err)
 
 	for rows.Next() {
@@ -58,15 +72,19 @@ func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 
 func GetInvoiceByDoc(document int) (domain.Invoice, error) {
 	var invoice domain.Invoice
-	stmt, err := db.DBCon.Prepare("select * from invoices where document=?")
+	stmt, err := DBCon.Prepare("select * from invoices where document=? and is_active = 1")
 	utils.CheckErr(err)
 
-	err = stmt.QueryRow(document).Scan(&invoice.Id, &invoice.Document, &invoice.Description, &invoice.Amount,
+	err = stmt.QueryRow(document).Scan(&invoice.Id, &invoice.Document,
+		&invoice.Description, &invoice.Amount,
 		&invoice.ReferenceMounth, &invoice.ReferenceYear,
-		&invoice.CreatedAt, &invoice.IsActice, &invoice.DesactiveAt)
+		&invoice.CreatedAt, &invoice.IsActice,
+		&invoice.DesactiveAt)
+
 	if err == sql.ErrNoRows {
 		return invoice, err
 	}
+
 	utils.CheckErr(err)
 	defer stmt.Close()
 
@@ -76,7 +94,7 @@ func GetInvoiceByDoc(document int) (domain.Invoice, error) {
 func CreateInvoice(invoice *domain.Invoice) (*domain.Invoice, error) {
 	var sql = "insert into invoices set document=?, description=?, amount=?,"
 	sql += " reference_month=?, reference_year=?, created_at=NOW(), is_active=1"
-	stmt, err := db.DBCon.Prepare(sql)
+	stmt, err := DBCon.Prepare(sql)
 	utils.CheckErr(err)
 
 	_, err = stmt.Exec(invoice.Document, invoice.Description, invoice.Amount,
@@ -91,7 +109,7 @@ func CreateInvoice(invoice *domain.Invoice) (*domain.Invoice, error) {
 }
 
 func DeleteInvoice(document int) (string, error) {
-	stmt, err := db.DBCon.Prepare("update invoices set is_active=0, desactive_at=NOW() where document = ?")
+	stmt, err := DBCon.Prepare("update invoices set is_active=0, desactive_at=NOW() where document = ?")
 	utils.CheckErr(err)
 
 	_, err = stmt.Exec(document)
