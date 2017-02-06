@@ -1,11 +1,12 @@
 package rest
 
 import (
+	"database/sql"
 	"encoding/json"
-	auth "github.com/gabrielclima/go_rest_api/auth"
-	. "github.com/gabrielclima/go_rest_api/domain"
+	"github.com/gabrielclima/go_rest_api/auth"
+	"github.com/gabrielclima/go_rest_api/domain"
 	"github.com/gabrielclima/go_rest_api/repositories"
-	utils "github.com/gabrielclima/go_rest_api/utils"
+	"github.com/gabrielclima/go_rest_api/utils"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
@@ -56,14 +57,20 @@ func InvoiceByDocResource(w http.ResponseWriter, r *http.Request) {
 	utils.CheckErr(err)
 
 	invoice, err := repositories.GetInvoiceByDoc(document)
-	utils.CheckErr(err)
 
-	if invoice != (Invoice{}) {
+	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			res, err = json.Marshal(utils.JsonErr{Code: http.StatusNotFound,
+				Message: "Não foi encontrada nenhuma nota fiscal com esse número de documento."})
+		} else {
+			panic(err)
+		}
+	}
+
+	if invoice != (domain.Invoice{}) {
 		res, err = json.Marshal(invoice)
 		utils.CheckErr(err)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-		res, err = json.Marshal(utils.JsonErr{Code: http.StatusNotFound, Text: "Not Found"})
 	}
 
 	w.Write(res)
@@ -80,7 +87,7 @@ func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	invoice := new(Invoice)
+	invoice := new(domain.Invoice)
 	body, err := ioutil.ReadAll(r.Body)
 	utils.CheckErr(err)
 
@@ -89,10 +96,10 @@ func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
 
 	inv, err := repositories.GetInvoiceByDoc(invoice.Document)
 
-	if inv != (Invoice{}) {
+	if inv != (domain.Invoice{}) {
 		w.WriteHeader(http.StatusConflict)
 		res, err = json.Marshal(utils.JsonErr{Code: http.StatusConflict,
-			Text: "Já existe um documento com esse número"})
+			Message: "Já existe uma nota fiscal com esse número"})
 		utils.CheckErr(err)
 	} else {
 		inv, err := repositories.CreateInvoice(invoice)
@@ -126,21 +133,19 @@ func DeleteInvoiceResource(w http.ResponseWriter, r *http.Request) {
 	utils.CheckErr(err)
 
 	invoice, err := repositories.GetInvoiceByDoc(document)
-	utils.CheckErr(err)
 
-	if invoice == (Invoice{}) {
+	if invoice == (domain.Invoice{}) {
 		w.WriteHeader(http.StatusNotFound)
-		res, err = json.Marshal(utils.JsonErr{Code: http.StatusNotFound, Text: "Not Found"})
+		res, err = json.Marshal(utils.JsonErr{Code: http.StatusNotFound,
+			Message: "Não foi encontrada nenhuma nota fiscal ativa com esse número de documento."})
 	} else {
-
 		deleted, err := repositories.DeleteInvoice(document)
 		utils.CheckErr(err)
-		if deleted  {
+		if deleted {
 			w.WriteHeader(http.StatusOK)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-
 	}
 	w.Write(res)
 }

@@ -3,7 +3,7 @@ package utils
 // JsonErr struct for error JSON response
 type JsonErr struct {
 	Code int    `json:"code"`
-	Text string `json:"text"`
+	Message string `json:"message"`
 }
 
 // CheckErr - a common function for error check

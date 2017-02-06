@@ -2,7 +2,7 @@ package auth
 
 import (
 	"encoding/json"
-	utils "github.com/gabrielclima/go_rest_api/utils"
+	"github.com/gabrielclima/go_rest_api/utils"
 	"net/http"
 	"strings"
 )
@@ -22,7 +22,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) int {
 	} else {
 		status = http.StatusUnauthorized
 		w.WriteHeader(status)
-		res, err = json.Marshal(utils.JsonErr{Code: http.StatusUnauthorized, Text: "Unauthorized"})
+		res, err = json.Marshal(utils.JsonErr{Code: http.StatusUnauthorized, Message: "Unauthorized"})
 		utils.CheckErr(err)
 		w.Write(res)
 	}

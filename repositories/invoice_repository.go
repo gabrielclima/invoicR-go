@@ -2,16 +2,16 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 	db "github.com/gabrielclima/go_rest_api/database"
 	"github.com/gabrielclima/go_rest_api/domain"
 	"github.com/gabrielclima/go_rest_api/utils"
 	"strings"
-	"fmt"
 )
 
 var DBCon *sql.DB
 
-func init(){
+func init() {
 	DBCon = db.DBCon
 }
 
@@ -25,7 +25,9 @@ func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 	var invoice domain.Invoice
 	var invoices domain.Invoices
 
-	var sql = "select * from invoices"
+	var sql = "select i.id, i.document, i.description, i.amount, " +
+		"i.reference_month, i.reference_year, i.created_at, i.is_active  " +
+		"from invoices i "
 
 	if year != "" {
 		sql += "  where reference_year = " + year
@@ -38,10 +40,10 @@ func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 		}
 	}
 
-	if year != "" && month != "" {
-		sql += "where is_active = 1 "
+	if year == "" && month == "" {
+		sql += " where is_active = 1 "
 	} else {
-		sql += "and is_active = 1"
+		sql += " and is_active = 1"
 	}
 
 	if orderBy != "" {
@@ -54,13 +56,15 @@ func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 		}
 	}
 
+	fmt.Printf(sql)
+
 	rows, err := DBCon.Query(sql)
 	utils.CheckErr(err)
 
 	for rows.Next() {
-		err = rows.Scan(&invoice.Document, &invoice.Description, &invoice.Amount,
-			&invoice.ReferenceMounth, &invoice.ReferenceYear,
-			&invoice.CreatedAt, &invoice.IsActice, &invoice.DesactiveAt)
+		err = rows.Scan(&invoice.Id, &invoice.Document, &invoice.Description,
+			&invoice.Amount, &invoice.ReferenceMounth, &invoice.ReferenceYear,
+			&invoice.CreatedAt, &invoice.IsActice)
 		invoices = append(invoices, invoice)
 		utils.CheckErr(err)
 	}
@@ -72,14 +76,16 @@ func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 
 func GetInvoiceByDoc(document int) (domain.Invoice, error) {
 	var invoice domain.Invoice
-	stmt, err := DBCon.Prepare("select * from invoices where document=? and is_active = 1")
+	stmt, err := DBCon.Prepare("select i.id, i.document, i.description, i.amount, " +
+		"i.reference_month, i.reference_year, i.created_at, i.is_active  " +
+		"from invoices i " +
+		"where document=? and is_active ")
 	utils.CheckErr(err)
 
 	err = stmt.QueryRow(document).Scan(&invoice.Id, &invoice.Document,
 		&invoice.Description, &invoice.Amount,
 		&invoice.ReferenceMounth, &invoice.ReferenceYear,
-		&invoice.CreatedAt, &invoice.IsActice,
-		&invoice.DesactiveAt)
+		&invoice.CreatedAt, &invoice.IsActice)
 
 	if err == sql.ErrNoRows {
 		return invoice, err
@@ -92,8 +98,9 @@ func GetInvoiceByDoc(document int) (domain.Invoice, error) {
 }
 
 func CreateInvoice(invoice *domain.Invoice) (*domain.Invoice, error) {
-	var sql = "insert into invoices set document=?, description=?, amount=?,"
-	sql += " reference_month=?, reference_year=?, created_at=NOW(), is_active=1"
+	var sql = "insert into invoices set document=?, description=?, amount=?, " +
+		"reference_month=?, reference_year=?, created_at=NOW(), is_active=1, desactive_at='0000-00-00 00:00:00'"
+
 	stmt, err := DBCon.Prepare(sql)
 	utils.CheckErr(err)
 
