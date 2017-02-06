@@ -135,7 +135,7 @@ func DeleteInvoiceResource(w http.ResponseWriter, r *http.Request) {
 
 		deleted, err := repositories.DeleteInvoice(document)
 		utils.CheckErr(err)
-		if deleted == "deleted" {
+		if deleted  {
 			w.WriteHeader(http.StatusOK)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)

@@ -108,7 +108,7 @@ func CreateInvoice(invoice *domain.Invoice) (*domain.Invoice, error) {
 	return invoice, err
 }
 
-func DeleteInvoice(document int) (string, error) {
+func DeleteInvoice(document int) (bool, error) {
 	stmt, err := DBCon.Prepare("update invoices set is_active=0, desactive_at=NOW() where document = ?")
 	utils.CheckErr(err)
 
@@ -116,5 +116,5 @@ func DeleteInvoice(document int) (string, error) {
 	utils.CheckErr(err)
 	defer stmt.Close()
 
-	return "deleted", err
+	return true, err
 }
