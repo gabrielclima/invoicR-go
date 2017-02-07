@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	db "github.com/gabrielclima/go_rest_api/database"
-	"github.com/gabrielclima/go_rest_api/domain"
+	"github.com/gabrielclima/go_rest_api/models"
 	"github.com/gabrielclima/go_rest_api/utils"
 	"strings"
 )
@@ -15,15 +15,15 @@ func init() {
 	DBCon = db.DBCon
 }
 
-func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
+func GetAllInvoices(params map[string][]string) (models.Invoices, error) {
 	orderBy := strings.Join(params["orderBy"], "")
 	year := strings.Join(params["year"], "")
 	month := strings.Join(params["month"], "")
 	limit := strings.Join(params["limit"], "")
 	offset := strings.Join(params["offset"], "")
 
-	var invoice domain.Invoice
-	var invoices domain.Invoices
+	var invoice models.Invoice
+	var invoices models.Invoices
 
 	var sql = "select i.id, i.document, i.description, i.amount, " +
 		"i.reference_month, i.reference_year, i.created_at, i.is_active  " +
@@ -74,8 +74,8 @@ func GetAllInvoices(params map[string][]string) (domain.Invoices, error) {
 	return invoices, err
 }
 
-func GetInvoiceByDoc(document int) (domain.Invoice, error) {
-	var invoice domain.Invoice
+func GetInvoiceByDoc(document int) (models.Invoice, error) {
+	var invoice models.Invoice
 	stmt, err := DBCon.Prepare("select i.id, i.document, i.description, i.amount, " +
 		"i.reference_month, i.reference_year, i.created_at, i.is_active  " +
 		"from invoices i " +
@@ -97,7 +97,7 @@ func GetInvoiceByDoc(document int) (domain.Invoice, error) {
 	return invoice, err
 }
 
-func CreateInvoice(invoice *domain.Invoice) (*domain.Invoice, error) {
+func CreateInvoice(invoice *models.Invoice) (*models.Invoice, error) {
 	var sql = "insert into invoices set document=?, description=?, amount=?, " +
 		"reference_month=?, reference_year=?, created_at=NOW(), is_active=1, desactive_at='0000-00-00 00:00:00'"
 

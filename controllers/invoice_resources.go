@@ -1,10 +1,10 @@
-package rest
+package controllers
 
 import (
 	"database/sql"
 	"encoding/json"
 	"github.com/gabrielclima/go_rest_api/auth"
-	"github.com/gabrielclima/go_rest_api/domain"
+	"github.com/gabrielclima/go_rest_api/models"
 	"github.com/gabrielclima/go_rest_api/repositories"
 	"github.com/gabrielclima/go_rest_api/utils"
 	"github.com/gorilla/mux"
@@ -17,7 +17,7 @@ import (
 const ApplicationJSON = "application/json; charset=UTF-8"
 
 // InvoicesResource returns all actives invoices
-func InvoicesResource(w http.ResponseWriter, r *http.Request) {
+func GetAllInvoicesController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 
 	res := []byte(`[]`)
@@ -40,7 +40,7 @@ func InvoicesResource(w http.ResponseWriter, r *http.Request) {
 }
 
 // InvoiceByDocResource return a the invoices parsed in request path
-func InvoiceByDocResource(w http.ResponseWriter, r *http.Request) {
+func InvoiceByDocController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 	vars := mux.Vars(r)
 	var res []byte
@@ -68,7 +68,7 @@ func InvoiceByDocResource(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if invoice != (domain.Invoice{}) {
+	if invoice != (models.Invoice{}) {
 		res, err = json.Marshal(invoice)
 		utils.CheckErr(err)
 	}
@@ -77,7 +77,7 @@ func InvoiceByDocResource(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateInvoiceResource create a invoice based on JSON body parsed in request
-func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
+func CreateInvoiceController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 	var err error
 	var res []byte
@@ -87,7 +87,7 @@ func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	invoice := new(domain.Invoice)
+	invoice := new(models.Invoice)
 	body, err := ioutil.ReadAll(r.Body)
 	utils.CheckErr(err)
 
@@ -96,7 +96,7 @@ func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
 
 	inv, err := repositories.GetInvoiceByDoc(invoice.Document)
 
-	if inv != (domain.Invoice{}) {
+	if inv != (models.Invoice{}) {
 		w.WriteHeader(http.StatusConflict)
 		res, err = json.Marshal(utils.JsonErr{Code: http.StatusConflict,
 			Message: "Já existe uma nota fiscal com esse número"})
@@ -115,7 +115,7 @@ func CreateInvoiceResource(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteInvoiceResource do a soft delete on a invoice parsed in request path
-func DeleteInvoiceResource(w http.ResponseWriter, r *http.Request) {
+func DeleteInvoiceController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 
 	vars := mux.Vars(r)
@@ -134,7 +134,7 @@ func DeleteInvoiceResource(w http.ResponseWriter, r *http.Request) {
 
 	invoice, err := repositories.GetInvoiceByDoc(document)
 
-	if invoice == (domain.Invoice{}) {
+	if invoice == (models.Invoice{}) {
 		w.WriteHeader(http.StatusNotFound)
 		res, err = json.Marshal(utils.JsonErr{Code: http.StatusNotFound,
 			Message: "Não foi encontrada nenhuma nota fiscal ativa com esse número de documento."})

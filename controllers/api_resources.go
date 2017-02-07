@@ -1,4 +1,4 @@
-package rest
+package controllers
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 
 const TextHTML = "text/html; charset=UTF-8"
 
-func ApiResource(w http.ResponseWriter, r *http.Request) {
+func ApiController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", TextHTML)
 	text := "<h2>Golang REST API</h2>"
 	text += "<span>Essa é uma API RESTFull escrita em Golang.</span>"
