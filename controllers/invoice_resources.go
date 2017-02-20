@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/gabrielclima/go_rest_api/auth"
 	"github.com/gabrielclima/go_rest_api/models"
 	"github.com/gabrielclima/go_rest_api/repositories"
 	"github.com/gabrielclima/go_rest_api/utils"
@@ -23,11 +22,6 @@ func GetAllInvoicesController(w http.ResponseWriter, r *http.Request) {
 
 	res := []byte(`[]`)
 	var err error
-
-	authenticate := auth.Authenticate(w, r)
-	if authenticate == http.StatusUnauthorized {
-		return
-	}
 
 	params := r.URL.Query()
 	invoices, err := repositories.GetAllInvoices(params)
@@ -50,11 +44,6 @@ func InvoiceByDocController(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var res []byte
 	var err error
-
-	authenticate := auth.Authenticate(w, r)
-	if authenticate == http.StatusUnauthorized {
-		return
-	}
 
 	var document int
 
@@ -88,11 +77,6 @@ func CreateInvoiceController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 	var err error
 	var res []byte
-
-	authenticate := auth.Authenticate(w, r)
-	if authenticate == http.StatusUnauthorized {
-		return
-	}
 
 	invoice := new(models.Invoice)
 	body, err := ioutil.ReadAll(r.Body)
@@ -140,11 +124,6 @@ func DeleteInvoiceController(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var res []byte
 	var err error
-
-	authenticate := auth.Authenticate(w, r)
-	if authenticate == http.StatusUnauthorized {
-		return
-	}
 
 	var document int
 

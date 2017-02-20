@@ -11,7 +11,7 @@ import (
 var validTokens = []string{"token#app1", "token#app2"}
 
 // Authenticate requests based in validTokens list
-func Authenticate(w http.ResponseWriter, r *http.Request) int {
+func Authenticate(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	var status int
 	var res []byte
 	var err error
@@ -19,7 +19,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) int {
 	token := strings.Join(header["Authorization"], "")
 
 	if isValueInList(token, validTokens) {
-		status = http.StatusOK
+		next(w, r)
 	} else {
 		status = http.StatusUnauthorized
 		w.WriteHeader(status)
@@ -29,8 +29,6 @@ func Authenticate(w http.ResponseWriter, r *http.Request) int {
 		}
 		w.Write(res)
 	}
-
-	return status
 }
 
 func isValueInList(value string, list []string) bool {
