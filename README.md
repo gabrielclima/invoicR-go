@@ -35,3 +35,110 @@ for Windows, o nome será `go_rest_api.exe`.
 $ go run main.go
 ```
 Esse comando faz o projeto ser compilado e executado.
+
+A API está configurada para rodar na porta `8080`
+
+## Rotas
+
+### GET /invoices
+
+Endpoint usado para retornar todas as notas fiscais ativas no banco de dados.
+
+```
+$ curl -H "Content-Type: application/json" -H "Authorization: token#app1" localhost/invoices 
+```
+
+Resposta esperada 
+```
+Status code 200
+
+[
+  {
+    "id": "1",
+    "document": "0",
+    "description": "Uma nota fiscal qualquer",
+    "amount": "0",
+    "reference_mounth": "0",
+    "reference_year": "0",
+    "created_at": "2017-02-03T21:27:28Z",
+    "is_active": "1"
+  }
+]
+```
+
+### GET /invoices{documento}
+
+Endpoint usado para retornar uma nota fiscal pelo número do documento
+
+```
+$ curl -H "Content-Type: application/json" -H "Authorization: token#app1"  localhost/invoices/{documento} 
+```
+
+Resposta esperada 
+```
+Status code 200
+
+[
+  {
+    "id": "1",
+    "document": "0",
+    "description": "Uma nota fiscal qualquer",
+    "amount": "0",
+    "reference_mounth": "0",
+    "reference_year": "0",
+    "created_at": "2017-02-03T21:27:28Z",
+    "is_active": "1"
+  }
+]
+```
+
+### POST /invoices
+
+Endpoint usado para retornar uma nota fiscal pelo número do documento
+
+```
+$ curl -H "Content-Type: application/json" -H "Authorization: token#app1" -X POST -d
+{
+    "document":"1222",
+    "description":"Uma nota fiscal qualquer",
+    "amount": "123.00",
+    "reference_mounth":"12",
+    "reference_year":"2014"
+} localhost:8080/invoices
+```
+
+Resposta esperada 
+```
+Status code 201
+
+[
+  {
+    "id": "1",
+    "document": "0",
+    "description": "Uma nota fiscal qualquer",
+    "amount": "0",
+    "reference_mounth": "0",
+    "reference_year": "0",
+    "created_at": "2017-02-03T21:27:28Z",
+    "is_active": "1"
+  }
+]
+```
+
+### DELETE /invoices{documento}
+
+Endpoint usado para fazer um soft delete, ou seja, inativar uma nota fiscal pelo número do documento
+
+```
+$ curl -H "Content-Type: application/json" -H "Authorization: token#app1" -X DELETE -d localhost:8080/invoices/{document}
+```
+
+Resposta esperada 
+```
+Status code 200
+```
+
+
+
+
+
