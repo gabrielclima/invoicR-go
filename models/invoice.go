@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Active Invoice struct
+// Invoice struct
 type Invoice struct {
 	Id              int       `json:"id,string"`
 	Document        int       `json:"document,string"`
@@ -17,5 +17,5 @@ type Invoice struct {
 	DesactiveAt     time.Time `json:"-"`
 }
 
-// Invoices collection struct
+// Invoice collection struct
 type Invoices []Invoice

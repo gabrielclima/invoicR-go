@@ -19,15 +19,19 @@ $ source invoices.sql
 ```
 
 ## Rodando o programa
-Com o banco de dados configurado e criado. Agora podemos rodar a API.
-Podemos usar dois métodos para fazer isso.
+Com o banco de dados criado e configurado. Agora podemos rodar a API.
+Podemos usar dois métodos para fazer isso:
 
 1. Buildando
-`$ go build`
+```
+$ go build
+```
 Quando este comando é executado na raiz do projeto, ou seja, `go_rest_api/` um executável será
 gerado na raiz do projeto. Se seu sistema for Unix/Linux, o nome será `go_rest_api`. Se seu sistema
 for Windows, o nome será `go_rest_api.exe`.
 
 2. Rodando diretamente
-`$ go run main.go`
+```
+$ go run main.go
+```
 Esse comando faz o projeto ser compilado e executado.
