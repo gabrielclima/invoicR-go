@@ -4,7 +4,6 @@ import (
 	"time"
 )
 
-
 // Active Invoice struct
 type Invoice struct {
 	Id              int       `json:"id,string"`
@@ -20,4 +19,3 @@ type Invoice struct {
 
 // Invoices collection struct
 type Invoices []Invoice
-

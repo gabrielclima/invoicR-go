@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "github.com/gabrielclima/go_rest_api/database"
 	"github.com/gabrielclima/go_rest_api/controllers"
+	_ "github.com/gabrielclima/go_rest_api/database"
 	"log"
 	"net/http"
 	"os"
