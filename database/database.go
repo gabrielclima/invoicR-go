@@ -2,17 +2,22 @@ package database
 
 import (
 	"database/sql"
-	"github.com/gabrielclima/go_rest_api/utils"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 )
 
+// DBCon storage my database connection
 var DBCon *sql.DB
 
-// InitDb make the database connection
+// Init make the database connection
 func init() {
 	var err error
 	DBCon, err = sql.Open("mysql", "root:1234@/invoices?parseTime=true")
-	utils.CheckErr(err)
+	if err != nil {
+		log.Panic("Erro na conexão com o banco de dados", err)
+	}
 	err = DBCon.Ping()
-	utils.CheckErr(err)
+	if err != nil {
+		log.Panic("Erro na conexão com o banco de dados", err)
+	}
 }

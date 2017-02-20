@@ -2,17 +2,23 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 	db "github.com/gabrielclima/go_rest_api/database"
 	"github.com/gabrielclima/go_rest_api/models"
-	"github.com/gabrielclima/go_rest_api/utils"
 	"strings"
+	"log"
 )
 
 var DBCon *sql.DB
 
 func init() {
 	DBCon = db.DBCon
+}
+
+type InvoiceRepository interface {
+	GetAllInvoices(params map[string][]string) (models.Invoices, error)
+	GetInvoiceByDoc(document int) (models.Invoice, error)
+	CreateInvoice(invoice *models.Invoice) (*models.Invoice, error)
+	DeleteInvoice(document int) (bool, error)
 }
 
 func GetAllInvoices(params map[string][]string) (models.Invoices, error) {
@@ -56,17 +62,19 @@ func GetAllInvoices(params map[string][]string) (models.Invoices, error) {
 		}
 	}
 
-	fmt.Printf(sql)
-
 	rows, err := DBCon.Query(sql)
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	for rows.Next() {
 		err = rows.Scan(&invoice.Id, &invoice.Document, &invoice.Description,
 			&invoice.Amount, &invoice.ReferenceMounth, &invoice.ReferenceYear,
 			&invoice.CreatedAt, &invoice.IsActice)
 		invoices = append(invoices, invoice)
-		utils.CheckErr(err)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	defer rows.Close()
@@ -80,18 +88,24 @@ func GetInvoiceByDoc(document int) (models.Invoice, error) {
 		"i.reference_month, i.reference_year, i.created_at, i.is_active  " +
 		"from invoices i " +
 		"where document=? and is_active ")
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	err = stmt.QueryRow(document).Scan(&invoice.Id, &invoice.Document,
 		&invoice.Description, &invoice.Amount,
 		&invoice.ReferenceMounth, &invoice.ReferenceYear,
 		&invoice.CreatedAt, &invoice.IsActice)
 
-	if err == sql.ErrNoRows {
-		return invoice, err
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return invoice, err
+		} else {
+			log.Println(err)
+		}
 	}
 
-	utils.CheckErr(err)
+
 	defer stmt.Close()
 
 	return invoice, err
@@ -102,7 +116,9 @@ func CreateInvoice(invoice *models.Invoice) (*models.Invoice, error) {
 		"reference_month=?, reference_year=?, created_at=NOW(), is_active=1, desactive_at='0000-00-00 00:00:00'"
 
 	stmt, err := DBCon.Prepare(sql)
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	_, err = stmt.Exec(invoice.Document, invoice.Description, invoice.Amount,
 		invoice.ReferenceMounth, invoice.ReferenceYear)
@@ -117,10 +133,14 @@ func CreateInvoice(invoice *models.Invoice) (*models.Invoice, error) {
 
 func DeleteInvoice(document int) (bool, error) {
 	stmt, err := DBCon.Prepare("update invoices set is_active=0, desactive_at=NOW() where document = ?")
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	_, err = stmt.Exec(document)
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 	defer stmt.Close()
 
 	return true, err

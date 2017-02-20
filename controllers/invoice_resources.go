@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"log"
 )
 
 // ApplicationJSON const for used in all Headers setting a Content-Type
@@ -30,10 +31,14 @@ func GetAllInvoicesController(w http.ResponseWriter, r *http.Request) {
 
 	params := r.URL.Query()
 	invoices, err := repositories.GetAllInvoices(params)
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 	if invoices != nil {
 		res, err = json.Marshal(invoices)
-		utils.CheckErr(err)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	w.Write(res)
@@ -54,7 +59,9 @@ func InvoiceByDocController(w http.ResponseWriter, r *http.Request) {
 	var document int
 
 	document, err = strconv.Atoi(vars["document"])
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	invoice, err := repositories.GetInvoiceByDoc(document)
 
@@ -64,13 +71,13 @@ func InvoiceByDocController(w http.ResponseWriter, r *http.Request) {
 			res, err = json.Marshal(utils.JsonErr{Code: http.StatusNotFound,
 				Message: "Não foi encontrada nenhuma nota fiscal com esse número de documento."})
 		} else {
-			panic(err)
+			log.Println(err)
 		}
 	}
 
 	if invoice != (models.Invoice{}) {
 		res, err = json.Marshal(invoice)
-		utils.CheckErr(err)
+		log.Println(err)
 	}
 
 	w.Write(res)
@@ -89,10 +96,14 @@ func CreateInvoiceController(w http.ResponseWriter, r *http.Request) {
 
 	invoice := new(models.Invoice)
 	body, err := ioutil.ReadAll(r.Body)
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	err = json.Unmarshal(body, &invoice)
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	inv, err := repositories.GetInvoiceByDoc(invoice.Document)
 
@@ -100,14 +111,22 @@ func CreateInvoiceController(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusConflict)
 		res, err = json.Marshal(utils.JsonErr{Code: http.StatusConflict,
 			Message: "Já existe uma nota fiscal com esse número"})
-		utils.CheckErr(err)
+		if err != nil {
+			log.Println(err)
+		}
 	} else {
 		inv, err := repositories.CreateInvoice(invoice)
-		utils.CheckErr(err)
+		if err != nil {
+			log.Println(err)
+		}
 		invoiceCreated, err := repositories.GetInvoiceByDoc(inv.Document)
-		utils.CheckErr(err)
+		if err != nil {
+			log.Println(err)
+		}
 		res, err = json.Marshal(invoiceCreated)
-		utils.CheckErr(err)
+		if err != nil {
+			log.Println(err)
+		}
 		w.WriteHeader(http.StatusCreated)
 	}
 
@@ -130,7 +149,9 @@ func DeleteInvoiceController(w http.ResponseWriter, r *http.Request) {
 	var document int
 
 	document, err = strconv.Atoi(vars["document"])
-	utils.CheckErr(err)
+	if err != nil {
+		log.Println(err)
+	}
 
 	invoice, err := repositories.GetInvoiceByDoc(document)
 
@@ -140,7 +161,9 @@ func DeleteInvoiceController(w http.ResponseWriter, r *http.Request) {
 			Message: "Não foi encontrada nenhuma nota fiscal ativa com esse número de documento."})
 	} else {
 		deleted, err := repositories.DeleteInvoice(document)
-		utils.CheckErr(err)
+		if err != nil {
+			log.Println(err)
+		}
 		if deleted {
 			w.WriteHeader(http.StatusOK)
 		} else {

@@ -1,5 +1,7 @@
+-- Create database
 CREATE DATABASE IF NOT EXISTS invoices;
 
+-- Create table
 CREATE TABLE IF NOT EXISTS `invoices`.`invoices` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `document` VARCHAR(14) NOT NULL,
