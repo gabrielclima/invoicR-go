@@ -10,7 +10,13 @@ import (
 
 var validTokens = []string{"token#app1", "token#app2"}
 
-// Authenticate requests based in validTokens list
+
+
+
+
+// Middleware que autentica todas as requisições feitas na API baseando nos tokens
+// presentes em validTokens
+// Retorna 401 se não estiver com um token válido
 func Authenticate(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	var status int
 	var res []byte

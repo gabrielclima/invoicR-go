@@ -13,10 +13,13 @@ import (
 	"log"
 )
 
-// ApplicationJSON const for used in all Headers setting a Content-Type
+// Constante usada para setar todos os Content-Type
 const ApplicationJSON = "application/json; charset=UTF-8"
 
-// InvoicesResource returns all actives invoices
+// GET /invoices
+// Controller que retorna todos os Invoices ativos na base de dados
+// Retorna o status code 200 com [] caso não tenha nenhum e 200 com uma lista de
+// Invoices, possua no banco de dados
 func GetAllInvoicesController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 
@@ -38,7 +41,11 @@ func GetAllInvoicesController(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-// InvoiceByDocResource return a the invoices parsed in request path
+// GET /invoice/{document}
+// Controller responsável por retornar um invoice baseado no
+// parâmetro "document" passado no PATH da requisição
+// Retorna 200 se encontrar algum Invoice com o número de documento
+// correspondente e 404 se não encontrar
 func InvoiceByDocController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 	vars := mux.Vars(r)
@@ -72,7 +79,17 @@ func InvoiceByDocController(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-// CreateInvoiceResource create a invoice based on JSON body parsed in request
+// POST /invoices
+// Controller responsável pela criação de um Invoice passado pelo body da requisição
+// Ex:
+// {
+//   "document":"1231241231",
+//   "description":"Uma nota fiscal qualquer",
+//   "amount": "123.00",
+//   "reference_mounth":"12",
+//   "reference_year":"2014"
+// }
+// Retorna 201 caso seja criado com sucesso e 409 caso o número de documento já exista na base
 func CreateInvoiceController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 	var err error
@@ -117,7 +134,10 @@ func CreateInvoiceController(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-// DeleteInvoiceResource do a soft delete on a invoice parsed in request path
+// DELETE /invoices/{document}
+// Controller responsável por fazer um soft delete, ou seja, apenas setar o status
+// para inativo baseado no documento que foi passado no path da requisição
+// Retorna 200 caso seja deletado com sucesso e 404 caso não tenha achado
 func DeleteInvoiceController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 

@@ -6,7 +6,7 @@ import (
 	"github.com/gabrielclima/go_rest_api/auth"
 )
 
-// Handlers map all routes
+// Rotas da API
 func Handlers() *negroni.Negroni {
 	protectedRoutes := mux.NewRouter().StrictSlash(true)
 
