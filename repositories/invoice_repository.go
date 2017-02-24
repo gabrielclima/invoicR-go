@@ -2,10 +2,11 @@ package repositories
 
 import (
 	"database/sql"
+	"log"
+	"strings"
+
 	db "github.com/gabrielclima/go_rest_api/database"
 	"github.com/gabrielclima/go_rest_api/models"
-	"strings"
-	"log"
 )
 
 var DBCon *sql.DB
@@ -105,7 +106,6 @@ func GetInvoiceByDoc(document int) (models.Invoice, error) {
 		}
 	}
 
-
 	defer stmt.Close()
 
 	return invoice, err
@@ -113,7 +113,7 @@ func GetInvoiceByDoc(document int) (models.Invoice, error) {
 
 func CreateInvoice(invoice *models.Invoice) (*models.Invoice, error) {
 	var sql = "insert into invoices set document=?, description=?, amount=?, " +
-		"reference_month=?, reference_year=?, created_at=NOW(), is_active=1, desactive_at='0000-00-00 00:00:00'"
+		"reference_month=?, reference_year=?, created_at=NOW(), is_active=1, desactive_at=NULL"
 
 	stmt, err := DBCon.Prepare(sql)
 	if err != nil {

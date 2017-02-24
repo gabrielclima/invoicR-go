@@ -3,14 +3,15 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strconv"
+
 	"github.com/gabrielclima/go_rest_api/models"
 	"github.com/gabrielclima/go_rest_api/repositories"
 	"github.com/gabrielclima/go_rest_api/utils"
 	"github.com/gorilla/mux"
-	"io/ioutil"
-	"net/http"
-	"strconv"
-	"log"
 )
 
 // Constante usada para setar todos os Content-Type
@@ -19,7 +20,7 @@ const ApplicationJSON = "application/json; charset=UTF-8"
 // GET /invoices
 // Controller que retorna todos os Invoices ativos na base de dados
 // Retorna o status code 200 com [] caso não tenha nenhum e 200 com uma lista de
-// Invoices, possua no banco de dados
+// Invoices, caso possua no banco de dados
 func GetAllInvoicesController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", ApplicationJSON)
 
@@ -98,35 +99,43 @@ func CreateInvoiceController(w http.ResponseWriter, r *http.Request) {
 	invoice := new(models.Invoice)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Println(err)
+		log.Panic(err)
 	}
 
 	err = json.Unmarshal(body, &invoice)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		res, err = json.Marshal(utils.JsonErr{Code: http.StatusBadRequest,
+			Message: "Erro ao ler o JSON da requisição. Verifique na documentação o formato correto."})
 		log.Println(err)
+		w.Write(res)
+		return
 	}
 
 	inv, err := repositories.GetInvoiceByDoc(invoice.Document)
+	if err != nil {
+		log.Println(err)
+	}
 
 	if inv != (models.Invoice{}) {
 		w.WriteHeader(http.StatusConflict)
 		res, err = json.Marshal(utils.JsonErr{Code: http.StatusConflict,
-			Message: "Já existe uma nota fiscal com esse número"})
+			Message: "Já existe uma nota fiscal com esse número de documento."})
 		if err != nil {
-			log.Println(err)
+			log.Panic(err)
 		}
 	} else {
 		inv, err := repositories.CreateInvoice(invoice)
 		if err != nil {
-			log.Println(err)
+			log.Panic(err)
 		}
 		invoiceCreated, err := repositories.GetInvoiceByDoc(inv.Document)
 		if err != nil {
-			log.Println(err)
+			log.Panic(err)
 		}
 		res, err = json.Marshal(invoiceCreated)
 		if err != nil {
-			log.Println(err)
+			log.Panic(err)
 		}
 		w.WriteHeader(http.StatusCreated)
 	}
@@ -153,6 +162,9 @@ func DeleteInvoiceController(w http.ResponseWriter, r *http.Request) {
 	}
 
 	invoice, err := repositories.GetInvoiceByDoc(document)
+	if err != nil {
+		log.Println(err)
+	}
 
 	if invoice == (models.Invoice{}) {
 		w.WriteHeader(http.StatusNotFound)
